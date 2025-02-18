@@ -4,5 +4,5 @@ import java.math.BigDecimal
 
 data class ProductDTO(
     val productCode: String,
-    val price: BigDecimal,
+    var price: BigDecimal,
 )

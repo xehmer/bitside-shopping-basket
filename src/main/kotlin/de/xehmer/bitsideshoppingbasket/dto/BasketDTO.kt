@@ -5,11 +5,11 @@ import java.util.*
 
 data class BasketDTO(
     val uuid: UUID,
-    val entries: List<BasketEntryDTO>,
-    val totalPrice: BigDecimal,
+    val entries: MutableList<BasketEntryDTO>,
+    var totalPrice: BigDecimal,
 )
 
 data class BasketEntryDTO(
-    val quantity: Int,
+    var quantity: Int,
     val product: ProductDTO
 )

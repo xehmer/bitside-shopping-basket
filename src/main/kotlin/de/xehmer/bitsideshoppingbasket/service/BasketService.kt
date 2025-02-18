@@ -4,6 +4,7 @@ import de.xehmer.bitsideshoppingbasket.dto.BasketDTO
 import de.xehmer.bitsideshoppingbasket.dto.BasketEntryDTO
 import de.xehmer.bitsideshoppingbasket.persistence.*
 import org.springframework.stereotype.Service
+import java.math.RoundingMode
 import java.util.*
 
 @Service
@@ -25,7 +26,7 @@ class BasketService(
         return convertBasket(basket)
     }
 
-    fun addEntry(basketUuid: UUID, productCode: String, quantity: Int): BasketEntryDTO {
+    fun addEntry(basketUuid: UUID, productCode: String, quantity: Int) {
         val basket = basketRepository.findByUuid(basketUuid)
             ?: throw IllegalArgumentException("Basket with id $basketUuid not found")
         val product = productRepository.findByProductCode(productCode)
@@ -35,20 +36,24 @@ class BasketService(
         if (existingEntryForProduct != null) {
             existingEntryForProduct.quantity += quantity
             basketEntryRepository.save(existingEntryForProduct)
-            return convertEntry(existingEntryForProduct)
         } else {
             val entryToInsert = BasketEntryEntity(basket = basket, product = product, quantity = quantity)
-            val createdEntry = basketEntryRepository.save(entryToInsert)
-            return convertEntry(createdEntry)
+            basketEntryRepository.save(entryToInsert)
         }
     }
 
     fun convertBasket(source: BasketEntity): BasketDTO {
-        return BasketDTO(
+        val basketDTO = BasketDTO(
             uuid = source.uuid,
-            entries = source.entries.map(::convertEntry),
-            totalPrice = basketCalculationService.calculateBasketTotal(source)
+            entries = source.entries.map(::convertEntry).toMutableList(),
+            totalPrice = basketCalculationService.calculateBaseBasketTotal(source)
         )
+        basketCalculationService.applyPromotions(basketDTO)
+        basketDTO.totalPrice = basketDTO.totalPrice.setScale(2, RoundingMode.HALF_UP)
+        basketDTO.entries.forEach { entry ->
+            entry.product.price = entry.product.price.setScale(2, RoundingMode.HALF_UP)
+        }
+        return basketDTO
     }
 
     fun convertEntry(entry: BasketEntryEntity): BasketEntryDTO {

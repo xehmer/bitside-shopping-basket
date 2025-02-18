@@ -1,7 +1,6 @@
 package de.xehmer.bitsideshoppingbasket.api
 
 import de.xehmer.bitsideshoppingbasket.dto.BasketDTO
-import de.xehmer.bitsideshoppingbasket.dto.BasketEntryDTO
 import de.xehmer.bitsideshoppingbasket.service.BasketService
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -18,7 +17,7 @@ class BasketController(
     @PostMapping
     fun createBasket(): ResponseEntity<Unit> {
         val basket = basketService.createBasket()
-        val basketUri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/${basket.uuid}").build().toUri()
+        val basketUri = getBasketUri(basket.uuid)
         return ResponseEntity.created(basketUri).build()
     }
 
@@ -28,13 +27,16 @@ class BasketController(
         return ResponseEntity.ok(basket)
     }
 
-    @PostMapping("/{basketUuid}/entry", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping("/{basketUuid}/entry")
     fun addEntry(
         @PathVariable basketUuid: UUID,
         @RequestParam productCode: String,
         @RequestParam quantity: Int
-    ): ResponseEntity<BasketEntryDTO> {
-        val entry = basketService.addEntry(basketUuid, productCode, quantity)
-        return ResponseEntity.ok(entry)
+    ): ResponseEntity<Unit> {
+        basketService.addEntry(basketUuid, productCode, quantity)
+        return ResponseEntity.created(getBasketUri(basketUuid)).build()
     }
+
+    private fun getBasketUri(basketUuid: UUID) =
+        ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/basket/$basketUuid").build().toUri()
 }
