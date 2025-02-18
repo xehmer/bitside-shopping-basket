@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class BitsideShoppingBasketApplication
 
 fun main(args: Array<String>) {
-  runApplication<BitsideShoppingBasketApplication>(*args)
+    runApplication<BitsideShoppingBasketApplication>(*args)
 }

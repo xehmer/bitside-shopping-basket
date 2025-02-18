@@ -7,7 +7,7 @@ import jakarta.persistence.MappedSuperclass
 
 @MappedSuperclass
 class BaseEntity {
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  val id: Long? = null
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    val id: Long? = null
 }

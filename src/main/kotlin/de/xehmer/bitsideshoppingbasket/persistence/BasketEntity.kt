@@ -1,28 +1,38 @@
 package de.xehmer.bitsideshoppingbasket.persistence
 
 import jakarta.persistence.*
-import org.springframework.data.repository.CrudRepository
+import jakarta.validation.constraints.NotNull
+import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 
 @Entity
+@Table(indexes = [Index(columnList = "uuid", unique = true)])
 class BasketEntity(
-  val uuid: UUID,
-  @OneToMany(cascade = [(CascadeType.ALL)], mappedBy = "basket")
-  val entries: MutableList<BasketEntryEntity> = mutableListOf(),
+
+    @NotNull
+    val uuid: UUID,
+
+    @OneToMany(cascade = [(CascadeType.ALL)], mappedBy = "basket")
+    val entries: MutableList<BasketEntryEntity> = mutableListOf()
+
 ) : BaseEntity()
 
 @Entity
 class BasketEntryEntity(
-  @ManyToOne(optional = false)
-  var basket: BasketEntity,
-  @ManyToOne(optional = false)
-  var product: ProductEntity,
-  @Column(nullable = false)
-  var quantity: Int,
+
+    @ManyToOne(optional = false)
+    var basket: BasketEntity,
+
+    @ManyToOne(optional = false)
+    var product: ProductEntity,
+
+    @NotNull
+    var quantity: Int
+
 ) : BaseEntity()
 
-interface BasketRepository : CrudRepository<BasketEntity, Long> {
-  fun findByUuid(uuid: UUID): BasketEntity?
+interface BasketRepository : JpaRepository<BasketEntity, Long> {
+    fun findByUuid(uuid: UUID): BasketEntity?
 }
 
-interface BasketEntryRepository : CrudRepository<BasketEntryEntity, Long>
+interface BasketEntryRepository : JpaRepository<BasketEntryEntity, Long>

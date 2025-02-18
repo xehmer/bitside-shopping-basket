@@ -7,18 +7,18 @@ import org.springframework.stereotype.Service
 
 @Service
 class ProductService(
-  private val productRepository: ProductRepository,
+    private val productRepository: ProductRepository,
 ) {
-  fun getProduct(productId: String): ProductDTO {
-    val product = productRepository.findByProductCode(productId)
-      ?: throw IllegalArgumentException("Product with id $productId not found")
-    return convertProduct(product)
-  }
+    fun getProduct(productId: String): ProductDTO {
+        val product = productRepository.findByProductCode(productId)
+            ?: throw IllegalArgumentException("Product with id $productId not found")
+        return convertProduct(product)
+    }
 
-  fun convertProduct(source: ProductEntity): ProductDTO {
-    return ProductDTO(
-      productCode = source.productCode,
-      price = source.price
-    )
-  }
+    fun convertProduct(source: ProductEntity): ProductDTO {
+        return ProductDTO(
+            productCode = source.productCode,
+            price = source.price
+        )
+    }
 }

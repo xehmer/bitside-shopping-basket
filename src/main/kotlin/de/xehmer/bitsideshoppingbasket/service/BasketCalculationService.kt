@@ -6,7 +6,7 @@ import java.math.BigDecimal
 
 @Service
 class BasketCalculationService {
-  fun calculateBasketTotal(basket: BasketEntity): BigDecimal {
-    return basket.entries.sumOf { it.product.price * BigDecimal.valueOf(it.quantity.toLong()) }
-  }
+    fun calculateBasketTotal(basket: BasketEntity): BigDecimal {
+        return basket.entries.sumOf { it.product.price * BigDecimal.valueOf(it.quantity.toLong()) }
+    }
 }
